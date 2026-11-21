@@ -1,73 +1,55 @@
-// ===================================
-// VYORA - WEBSITE INTERACTIONS
-// ===================================
 
-// Mobile navigation
+// LOADER
+const loader = document.getElementById("loader");
+
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    loader.classList.add("hide");
+  }, 800);
+});
+
+// MOBILE NAVIGATION
 const menuToggle = document.getElementById("menuToggle");
-const navMenu = document.getElementById("navMenu");
+const nav = document.getElementById("nav");
 
 menuToggle.addEventListener("click", () => {
-    navMenu.classList.toggle("active");
+  nav.classList.toggle("active");
 
-    menuToggle.textContent =
-        navMenu.classList.contains("active") ? "✕" : "☰";
+  menuToggle.textContent =
+    nav.classList.contains("active") ? "✕" : "☰";
 });
 
-// Close mobile menu after selecting a link
-document.querySelectorAll("#navMenu a").forEach(link => {
-    link.addEventListener("click", () => {
-        navMenu.classList.remove("active");
-        menuToggle.textContent = "☰";
-    });
+document.querySelectorAll("nav a").forEach(link => {
+  link.addEventListener("click", () => {
+    nav.classList.remove("active");
+    menuToggle.textContent = "☰";
+  });
 });
 
-// Card fan animation
-const cardFan = document.getElementById("cardFan");
+// CARD FAN OUT EFFECT
+const fanStage = document.getElementById("fanStage");
 
-cardFan.addEventListener("click", (event) => {
-    if (event.target.closest(".fan-card")) {
-        // Let the project link work normally
-        return;
+fanStage.addEventListener("click", (event) => {
+  if (window.matchMedia("(hover: none)").matches) {
+    fanStage.classList.toggle("fan-active");
+  }
+});
+
+// SCROLL REVEAL ANIMATION
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("visible");
+      observer.unobserve(entry.target);
     }
-
-    cardFan.classList.toggle("is-open");
+  });
+}, {
+  threshold: 0.12
 });
 
-// Keyboard accessibility
-cardFan.setAttribute("tabindex", "0");
-cardFan.setAttribute("role", "button");
-cardFan.setAttribute("aria-label", "Toggle portfolio card fan");
-
-cardFan.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        cardFan.classList.toggle("is-open");
-    }
+document.querySelectorAll(
+  ".section, .statement, .service-list > div"
+).forEach(element => {
+  element.classList.add("reveal");
+  observer.observe(element);
 });
-
-// Current year
-document.getElementById("year").textContent =
-    new Date().getFullYear();
-
-// Scroll reveal animation
-const revealElements = document.querySelectorAll(
-    ".skill-card, .case-card, .process-card, .about-highlight"
-);
-
-if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add("visible");
-                observer.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.15
-    });
-
-    revealElements.forEach(element => {
-        element.classList.add("reveal");
-        observer.observe(element);
-    });
-}
