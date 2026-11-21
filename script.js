@@ -1,55 +1,74 @@
 
-// LOADER
-const loader = document.getElementById("loader");
+// ===================================
+// VYORA - WEBSITE INTERACTIONS
+// ===================================
 
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    loader.classList.add("hide");
-  }, 800);
-});
-
-// MOBILE NAVIGATION
+// Mobile navigation
 const menuToggle = document.getElementById("menuToggle");
-const nav = document.getElementById("nav");
+const navMenu = document.getElementById("navMenu");
 
 menuToggle.addEventListener("click", () => {
-  nav.classList.toggle("active");
+    navMenu.classList.toggle("active");
 
-  menuToggle.textContent =
-    nav.classList.contains("active") ? "✕" : "☰";
+    menuToggle.textContent =
+        navMenu.classList.contains("active") ? "✕" : "☰";
 });
 
-document.querySelectorAll("nav a").forEach(link => {
-  link.addEventListener("click", () => {
-    nav.classList.remove("active");
-    menuToggle.textContent = "☰";
-  });
+// Close mobile menu after selecting a link
+document.querySelectorAll("#navMenu a").forEach(link => {
+    link.addEventListener("click", () => {
+        navMenu.classList.remove("active");
+        menuToggle.textContent = "☰";
+    });
 });
 
-// CARD FAN OUT EFFECT
-const fanStage = document.getElementById("fanStage");
+// Card fan animation
+const cardFan = document.getElementById("cardFan");
 
-fanStage.addEventListener("click", (event) => {
-  if (window.matchMedia("(hover: none)").matches) {
-    fanStage.classList.toggle("fan-active");
-  }
-});
-
-// SCROLL REVEAL ANIMATION
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add("visible");
-      observer.unobserve(entry.target);
+cardFan.addEventListener("click", (event) => {
+    if (event.target.closest(".fan-card")) {
+        // Let the project link work normally
+        return;
     }
-  });
-}, {
-  threshold: 0.12
+
+    cardFan.classList.toggle("is-open");
 });
 
-document.querySelectorAll(
-  ".section, .statement, .service-list > div"
-).forEach(element => {
-  element.classList.add("reveal");
-  observer.observe(element);
+// Keyboard accessibility
+cardFan.setAttribute("tabindex", "0");
+cardFan.setAttribute("role", "button");
+cardFan.setAttribute("aria-label", "Toggle portfolio card fan");
+
+cardFan.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        cardFan.classList.toggle("is-open");
+    }
 });
+
+// Current year
+document.getElementById("year").textContent =
+    new Date().getFullYear();
+
+// Scroll reveal animation
+const revealElements = document.querySelectorAll(
+    ".skill-card, .case-card, .process-card, .about-highlight"
+);
+
+if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.15
+    });
+
+    revealElements.forEach(element => {
+        element.classList.add("reveal");
+        observer.observe(element);
+    });
+}
